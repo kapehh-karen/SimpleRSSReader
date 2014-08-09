@@ -4,15 +4,29 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.karen.simplerssreader.core.rss.Message;
+import com.example.karen.simplerssreader.helpers.rss.IRetreiveFeedEvent;
+import com.example.karen.simplerssreader.helpers.rss.RetreiveFeedTask;
 
-public class NewsActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener {
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class NewsActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener, IRetreiveFeedEvent {
+
+    // Статичное поле, необходимо из-за пересоздания активити при повороте экрана
+    private static RetreiveFeedTask retreiveFeedTask = null;
+
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private ArrayAdapter arrayAdapter;
+    private ArrayList<String> arrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,50 +35,65 @@ public class NewsActivity extends Activity implements SwipeRefreshLayout.OnRefre
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
         mSwipeRefreshLayout.setOnRefreshListener(this);
-        // делаем повеселее getResources().getColor(R.color.hololight)
         mSwipeRefreshLayout.setColorSchemeColors(
-                getResources().getColor(android.R.color.holo_blue_bright),
-                getResources().getColor(android.R.color.holo_green_light),
-                getResources().getColor(android.R.color.holo_orange_light),
-                getResources().getColor(android.R.color.holo_red_light)
-            );
+            getResources().getColor(android.R.color.holo_blue_bright),
+            getResources().getColor(android.R.color.holo_green_light),
+            getResources().getColor(android.R.color.holo_orange_light),
+            getResources().getColor(android.R.color.holo_red_light)
+        );
+
+        arrayList = new ArrayList<String>();
+        arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arrayList);
 
         ListView listView = (ListView) findViewById(android.R.id.list);
-        // классический адаптер
-        listView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,
-                new String[] { "One", "Two", "Three" }
-            ));
+        listView.setAdapter(arrayAdapter);
+
+        if (retreiveFeedTask != null) {
+            /*
+             Нужно для того, чтобы при повороте экрана, когда пересоздается активити,
+             загрузка данных продолжалась корректно, а не пропадал весь прогресс.
+              */
+            mSwipeRefreshLayout.setRefreshing(true);
+            retreiveFeedTask.setRetreiveFeedEvent(this);
+        }
+
+        updateList();
     }
 
     @Override
     public void onRefresh() {
-        // говорим о том, что собираемся начать
-        Toast.makeText(this, "STARTED", Toast.LENGTH_SHORT).show();
-        // начинаем показывать прогресс
-        mSwipeRefreshLayout.setRefreshing(true);
-        // ждем 3 секунды и прячем прогресс
-        mSwipeRefreshLayout.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mSwipeRefreshLayout.setRefreshing(false);
-                // говорим о том, что собираемся закончить
-                Toast.makeText(NewsActivity.this, "END", Toast.LENGTH_SHORT).show();
-            }
-        }, 3000);
+        if (retreiveFeedTask == null) {
+            retreiveFeedTask = new RetreiveFeedTask();
+            retreiveFeedTask.setRetreiveFeedEvent(this);
+            retreiveFeedTask.execute("http://habrahabr.ru/rss/hubs/?with_hubs=true&with_tags=true");
+        }
+    }
+
+    private void updateList() {
+        arrayList.clear();
+        List<Message> messages = Main.cachedContainerFeed.getPosts();
+        for (Message message : messages) {
+            arrayList.add(message.getTitle());
+        }
+        arrayAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onRetreiveFeed(List<Message> messages) {
+        retreiveFeedTask = null;
+        mSwipeRefreshLayout.setRefreshing(false);
+        Main.cachedContainerFeed.setPosts(messages);
+        updateList();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.news, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;

@@ -1,10 +1,19 @@
-package com.example.karen.simplerssreader.core.rss;
+package com.example.karen.simplerssreader.helpers.rss;
 
 import java.util.List;
 
 import android.os.AsyncTask;
 
+import com.example.karen.simplerssreader.core.rss.Message;
+import com.example.karen.simplerssreader.core.rss.XmlPullFeedParser;
+
 public class RetreiveFeedTask extends AsyncTask<String, Void, List<Message>> {
+    private IRetreiveFeedEvent retreiveFeedEvent;
+
+    public void setRetreiveFeedEvent(IRetreiveFeedEvent context) {
+        retreiveFeedEvent = context;
+    }
+
     protected List<Message> doInBackground(String... urls) {
         try {
         	XmlPullFeedParser xmlRss = new XmlPullFeedParser(urls[0]);
@@ -15,8 +24,6 @@ public class RetreiveFeedTask extends AsyncTask<String, Void, List<Message>> {
     }
 
     protected void onPostExecute(List<Message> messages) {
-        if (messages == null) return;
-        //MyApplication.instance.getCFactoryNews().AddListData(messages);
-        // TODO
+        retreiveFeedEvent.onRetreiveFeed(messages);
     }
 }

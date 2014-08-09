@@ -2,6 +2,7 @@ package com.example.karen.simplerssreader.core.rss;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,30 +13,56 @@ import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.util.Map;
 
-public class Message /*implements Comparable<Message>*/ {
-    private static SimpleDateFormat messageDateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
+public class Message {
+    private static SimpleDateFormat FORMATTER = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
 
-    private Map<String, String> tagList = new HashMap<String, String>();
+    /*private Map<String, String> tagMap = new HashMap<String, String>();
+    private Map<String, List<String>> tagMapList = new HashMap<String, List<String>>();
 
-    public Date getDateFormat(String tagName) {
+    public Date getDate(String tagName) throws ParseException {
+        return FORMATTER.parse(getString(tagName));
+    }
 
-        return messageDateFormat.format(date);
+    public Date getDate(String tagName, DateFormat dateFormat) throws ParseException {
+        return dateFormat.parse(getString(tagName));
+    }
+
+    public void setDate(String tagName, Date date) {
+        setString(tagName, FORMATTER.format(date));
+    }
+
+    public void setDate(String tagName, Date date, DateFormat dateFormat) {
+        setString(tagName, dateFormat.format(date));
     }
 
     public String getString(String tagName) {
-        if (!tagList.containsKey(tagName)) {
+        if (!tagMap.containsKey(tagName)) {
             return null;
         } else {
-            return tagList.get(tagName);
+            return tagMap.get(tagName);
         }
     }
 
     public void setString(String tagName, String tagValue) {
-        tagList.remove(tagName);
-        tagList.put(tagName, tagValue);
+        tagMap.remove(tagName);
+        tagMap.put(tagName, tagValue);
     }
 
-    /*
+    public void removeTag(String tagName) {
+        tagMap.remove(tagName);
+    }
+
+
+    public void addStringArray(String tagName, String tagValue) {
+        if (!tagMapList.containsKey(tagName)) {
+            List<String> stringList = new ArrayList<String>();
+            stringList.add(tagValue);
+            tagMapList.put(tagName, stringList);
+        } else {
+            tagMapList.get(tagName).add(tagValue);
+        }
+    }*/
+
     private String title;
     private URL link;
     private String description;
@@ -49,7 +76,7 @@ public class Message /*implements Comparable<Message>*/ {
         try {
             this.link = new URL(link);
         } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+            this.link = null;
         }
     }
 
@@ -58,13 +85,13 @@ public class Message /*implements Comparable<Message>*/ {
     }
 
     public void setDate(String date) {
-        while (!date.endsWith("00")){
+        /*while (!date.endsWith("00")){
             date += "0";
-        }
+        }*/
         try {
 			this.date = FORMATTER.parse(date.trim());
         } catch (ParseException e) {
-            throw new RuntimeException(e);
+            this.date = null;
         }
     }
 
@@ -84,8 +111,13 @@ public class Message /*implements Comparable<Message>*/ {
     	this.description = description;
     }
 
-    public int compareTo(Message another) {
-        if (another == null) return 1;
-        return another.date.compareTo(date);
-    }*/
+    @Override
+    public String toString() {
+        return "Message{" +
+                "title='" + title + '\'' +
+                ", link=" + link +
+                ", description='" + description + '\'' +
+                ", date=" + date +
+                '}';
+    }
 }

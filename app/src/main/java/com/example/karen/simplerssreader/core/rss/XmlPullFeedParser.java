@@ -1,26 +1,28 @@
 package com.example.karen.simplerssreader.core.rss;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 import android.util.Xml;
 
 public class XmlPullFeedParser extends BaseFeedParser {
 
-    public XmlPullFeedParser(String feedUrl, String encoding) {
+    public XmlPullFeedParser(String feedUrl) {
         super(feedUrl);
     }
     
-	public List<Message> parse() throws Exception {
+	public List<Message> parse() throws XmlPullParserException, IOException {
         List<Message> messages = null;
         XmlPullParser parser = Xml.newPullParser();
 
         InputStream is = this.getInputStream();
-        is.read(new byte[4]);
-        parser.setInput(is, null);
+        //is.read(new byte[4]); // Пропускаем мусор перед RSS тегом (если этот мусор есть)
+        parser.setInput(is, null); // TODO: Решить что-то с кодировками
     	int eventType = parser.getEventType();
         Message currentMessage = null;
         boolean done = false;
@@ -50,6 +52,7 @@ public class XmlPullFeedParser extends BaseFeedParser {
                     name = parser.getName();
                     if (name.equalsIgnoreCase(ITEM) && (currentMessage != null)) {
                         messages.add(currentMessage);
+                        currentMessage = null;
                     } else if (name.equalsIgnoreCase(CHANNEL)) {
                         done = true;
                     }

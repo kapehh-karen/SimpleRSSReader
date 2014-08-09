@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
-public abstract class BaseFeedParser implements FeedParser {
-
+public abstract class BaseFeedParser {
     static final String PUB_DATE = "pubDate";
     static final String DESCRIPTION = "description";
     static final String LINK = "link";
@@ -14,14 +14,14 @@ public abstract class BaseFeedParser implements FeedParser {
     static final String ITEM = "item";
     static final String CHANNEL = "channel";
     static final String RSS = "rss";
-    
-    final URL feedUrl;
 
-    protected BaseFeedParser(String feedUrl){
+    private URL feedUrl;
+
+    protected BaseFeedParser(String feedUrl) {
         try {
             this.feedUrl = new URL(feedUrl);
         } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+            this.feedUrl = null;
         }
     }
 
@@ -29,7 +29,9 @@ public abstract class BaseFeedParser implements FeedParser {
         try {
             return feedUrl.openConnection().getInputStream();
         } catch (IOException e) {
-        	throw new RuntimeException(e);
+        	return null;
         }
     }
+
+    public abstract List<Message> parse() throws Exception;
 }
