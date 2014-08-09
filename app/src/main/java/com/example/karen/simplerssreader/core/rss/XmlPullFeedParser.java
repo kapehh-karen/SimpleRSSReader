@@ -9,7 +9,8 @@ import org.xmlpull.v1.XmlPullParser;
 import android.util.Xml;
 
 public class XmlPullFeedParser extends BaseFeedParser {
-    public XmlPullFeedParser(String feedUrl) {
+
+    public XmlPullFeedParser(String feedUrl, String encoding) {
         super(feedUrl);
     }
     
@@ -23,7 +24,7 @@ public class XmlPullFeedParser extends BaseFeedParser {
     	int eventType = parser.getEventType();
         Message currentMessage = null;
         boolean done = false;
-        while (eventType != XmlPullParser.END_DOCUMENT && !done){
+        while (eventType != XmlPullParser.END_DOCUMENT && !done) {
             String name = null;
             switch (eventType){
                 case XmlPullParser.START_DOCUMENT:
@@ -31,25 +32,25 @@ public class XmlPullFeedParser extends BaseFeedParser {
                     break;
                 case XmlPullParser.START_TAG:
                     name = parser.getName();
-                    if (name.equalsIgnoreCase(ITEM)){
+                    if (name.equalsIgnoreCase(ITEM)) {
                         currentMessage = new Message();
-                    } else if (currentMessage != null){
-                        if (name.equalsIgnoreCase(LINK)){
+                    } else if (currentMessage != null) {
+                        if (name.equalsIgnoreCase(LINK)) {
                             currentMessage.setLink(parser.nextText());
-                        } else if (name.equalsIgnoreCase(DESCRIPTION)){
+                        } else if (name.equalsIgnoreCase(DESCRIPTION)) {
                             currentMessage.setDescription(parser.nextText());
-                        } else if (name.equalsIgnoreCase(PUB_DATE)){
+                        } else if (name.equalsIgnoreCase(PUB_DATE)) {
                             currentMessage.setDate(parser.nextText());
-                        } else if (name.equalsIgnoreCase(TITLE)){
+                        } else if (name.equalsIgnoreCase(TITLE)) {
                             currentMessage.setTitle(parser.nextText());
                         }    
                     }
                     break;
                 case XmlPullParser.END_TAG:
                     name = parser.getName();
-                    if (name.equalsIgnoreCase(ITEM) && currentMessage != null){
+                    if (name.equalsIgnoreCase(ITEM) && (currentMessage != null)) {
                         messages.add(currentMessage);
-                    } else if (name.equalsIgnoreCase(CHANNEL)){
+                    } else if (name.equalsIgnoreCase(CHANNEL)) {
                         done = true;
                     }
                     break;
