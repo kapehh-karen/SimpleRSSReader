@@ -7,11 +7,14 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.karen.simplerssreader.core.rss.Message;
+import com.example.karen.simplerssreader.helpers.adapters.NewsListAdapter;
 import com.example.karen.simplerssreader.helpers.rss.IRetreiveFeedEvent;
 import com.example.karen.simplerssreader.helpers.rss.RetreiveFeedTask;
 
@@ -24,9 +27,11 @@ public class NewsActivity extends Activity implements SwipeRefreshLayout.OnRefre
     // Статичное поле, необходимо из-за пересоздания активити при повороте экрана
     private static RetreiveFeedTask retreiveFeedTask = null;
 
+    private ListView listView;
+    private TextView textView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ArrayAdapter arrayAdapter;
-    private ArrayList<String> arrayList;
+    private ArrayList<Object> arrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,16 +41,18 @@ public class NewsActivity extends Activity implements SwipeRefreshLayout.OnRefre
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mSwipeRefreshLayout.setColorSchemeColors(
-            getResources().getColor(android.R.color.holo_blue_bright),
+            getResources().getColor(R.color.apptheme_color),
+            getResources().getColor(android.R.color.holo_blue_light),
             getResources().getColor(android.R.color.holo_green_light),
-            getResources().getColor(android.R.color.holo_orange_light),
             getResources().getColor(android.R.color.holo_red_light)
         );
 
-        arrayList = new ArrayList<String>();
-        arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arrayList);
+        textView = (TextView) findViewById(R.id.newsTextView);
 
-        ListView listView = (ListView) findViewById(android.R.id.list);
+        arrayList = new ArrayList<Object>();
+        arrayAdapter = new NewsListAdapter(this, arrayList);
+
+        listView = (ListView) findViewById(R.id.newsListView);
         listView.setAdapter(arrayAdapter);
 
         if (retreiveFeedTask != null) {
@@ -70,20 +77,39 @@ public class NewsActivity extends Activity implements SwipeRefreshLayout.OnRefre
     }
 
     private void updateList() {
+        // Очищаем список
         arrayList.clear();
+
+        // Получаем новости (из кеша, или уже загруженные ранее)
         List<Message> messages = Main.cachedContainerFeed.getPosts();
         for (Message message : messages) {
-            arrayList.add(message.getTitle());
+            arrayList.add(message);
         }
+
+        // Говорим адаптеру чтоб обновил данные
         arrayAdapter.notifyDataSetChanged();
+
+        // Если уж совсем ничего нет, отображаем соответствующую надпись
+        if (arrayList.size() > 0) {
+            textView.setVisibility(View.GONE);
+            listView.setVisibility(View.VISIBLE);
+        } else {
+            textView.setVisibility(View.VISIBLE);
+            listView.setVisibility(View.GONE);
+        }
     }
 
     @Override
     public void onRetreiveFeed(List<Message> messages) {
         retreiveFeedTask = null;
         mSwipeRefreshLayout.setRefreshing(false);
-        Main.cachedContainerFeed.setPosts(messages);
-        updateList();
+        if (messages != null) {
+            Main.cachedContainerFeed.setPosts(messages);
+            updateList();
+            Toast.makeText(this, R.string.complete_loading, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, R.string.error_loading, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

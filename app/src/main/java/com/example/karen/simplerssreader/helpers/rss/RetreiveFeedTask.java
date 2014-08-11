@@ -17,6 +17,7 @@ public class RetreiveFeedTask extends AsyncTask<String, Void, List<Message>> {
     protected List<Message> doInBackground(String... urls) {
         try {
         	XmlPullFeedParser xmlRss = new XmlPullFeedParser(urls[0]);
+            Thread.sleep(5000); // TODO: Remove
             return xmlRss.parse();
         } catch (Exception e) {
             return null;
