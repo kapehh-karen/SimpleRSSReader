@@ -2,6 +2,9 @@ package com.example.karen.simplerssreader.helpers.adapters;
 
 import android.content.Context;
 import android.text.Html;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +57,7 @@ public class NewsListAdapter extends ArrayAdapter<Object> {
 
     private void processRow(ViewHolder viewHolder, Message message) {
         viewHolder.textViewTitle.setText(message.getTitle());
-        viewHolder.textViewDescription.setText(Html.fromHtml(message.getDescription()));
+        viewHolder.textViewDescription.setText(NewsHtml.fromHtml(message.getDescription()));
+        //viewHolder.textViewDescription.setMovementMethod(NewsLinkMovementMethod.getInstance(getContext()));
     }
 }

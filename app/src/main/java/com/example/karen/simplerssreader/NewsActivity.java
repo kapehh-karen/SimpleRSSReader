@@ -41,7 +41,7 @@ public class NewsActivity extends Activity implements SwipeRefreshLayout.OnRefre
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mSwipeRefreshLayout.setColorSchemeColors(
-            getResources().getColor(R.color.apptheme_color),
+            getResources().getColor(android.R.color.holo_orange_dark),
             getResources().getColor(android.R.color.holo_blue_light),
             getResources().getColor(android.R.color.holo_green_light),
             getResources().getColor(android.R.color.holo_red_light)
