@@ -57,7 +57,14 @@ public class NewsListAdapter extends ArrayAdapter<Object> {
 
     private void processRow(ViewHolder viewHolder, Message message) {
         viewHolder.textViewTitle.setText(message.getTitle());
-        viewHolder.textViewDescription.setText(NewsHtml.fromHtml(message.getDescription()));
-        //viewHolder.textViewDescription.setMovementMethod(NewsLinkMovementMethod.getInstance(getContext()));
+
+        URLImageGetter urlImageGetter;
+        if (viewHolder.textViewDescription.getTag() == null) {
+            urlImageGetter = new URLImageGetter(viewHolder.textViewDescription, context);
+            viewHolder.textViewDescription.setTag(urlImageGetter);
+        } else {
+            urlImageGetter = (URLImageGetter) viewHolder.textViewDescription.getTag();
+        }
+        viewHolder.textViewDescription.setText(Html.fromHtml(message.getDescription(), urlImageGetter, null));
     }
 }

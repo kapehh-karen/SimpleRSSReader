@@ -1,13 +1,21 @@
 package com.example.karen.simplerssreader;
 
+import android.annotation.TargetApi;
+import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -18,11 +26,17 @@ import com.example.karen.simplerssreader.helpers.adapters.NewsListAdapter;
 import com.example.karen.simplerssreader.helpers.rss.IRetreiveFeedEvent;
 import com.example.karen.simplerssreader.helpers.rss.RetreiveFeedTask;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 
-public class NewsActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener, IRetreiveFeedEvent {
+public class NewsActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener, IRetreiveFeedEvent, AdapterView.OnItemClickListener {
+
+    // Формат даты последнего обновления списка
+    private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
 
     // Статичное поле, необходимо из-за пересоздания активити при повороте экрана
     private static RetreiveFeedTask retreiveFeedTask = null;
@@ -54,6 +68,7 @@ public class NewsActivity extends Activity implements SwipeRefreshLayout.OnRefre
 
         listView = (ListView) findViewById(R.id.newsListView);
         listView.setAdapter(arrayAdapter);
+        listView.setOnItemClickListener(this);
 
         if (retreiveFeedTask != null) {
             /*
@@ -68,11 +83,18 @@ public class NewsActivity extends Activity implements SwipeRefreshLayout.OnRefre
     }
 
     @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Message message = (Message) arrayList.get(position);
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(message.getUrl()));
+        startActivity(browserIntent);
+    }
+
+    @Override
     public void onRefresh() {
         if (retreiveFeedTask == null) {
             retreiveFeedTask = new RetreiveFeedTask();
             retreiveFeedTask.setRetreiveFeedEvent(this);
-            retreiveFeedTask.execute("http://habrahabr.ru/rss/hubs/?with_hubs=true&with_tags=true");
+            retreiveFeedTask.execute("http://habrahabr.ru/rss/hubs/?with_hubs=true&with_tags=true" /*"http://bash.im/rss/"*/);
         }
     }
 
@@ -96,6 +118,16 @@ public class NewsActivity extends Activity implements SwipeRefreshLayout.OnRefre
         } else {
             textView.setVisibility(View.VISIBLE);
             listView.setVisibility(View.GONE);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            ActionBar ab = getActionBar();
+            if (ab != null) {
+                Date dateUpdate = Main.cachedContainerFeed.getDateUpdate();
+                if (dateUpdate != null) {
+                    ab.setSubtitle(simpleDateFormat.format(dateUpdate));
+                }
+            }
         }
     }
 

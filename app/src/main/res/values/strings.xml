@@ -4,5 +4,5 @@
     <string name="action_settings">Настройки</string>
     <string name="news_empty">Список пуст, потяните вниз для обновления.</string>
     <string name="error_loading">Ошибка при загрузке!</string>
-    <string name="complete_loading">Готово!</string>
+    <string name="complete_loading">Обновлено!</string>
 </resources>

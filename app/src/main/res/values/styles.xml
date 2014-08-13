@@ -3,6 +3,8 @@
     <!-- ActionBar styles -->
     <style name="AppThemeActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
         <item name="android:background">@android:color/holo_orange_dark</item>
+        <item name="android:subtitleTextStyle">@style/AppThemeActionBarTitleText</item>
+        <item name="android:titleTextStyle">@style/AppThemeActionBarTitleText</item>
     </style>
 
     <!-- ActionBar title text -->
