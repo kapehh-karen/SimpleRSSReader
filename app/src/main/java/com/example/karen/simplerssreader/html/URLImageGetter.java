@@ -1,15 +1,10 @@
-package com.example.karen.simplerssreader.helpers.adapters;
+package com.example.karen.simplerssreader.html;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.text.Html;
-import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
-
-import com.example.karen.simplerssreader.helpers.cache.URLBitmapDrawable;
-import com.example.karen.simplerssreader.helpers.utils.ConvertDimensions;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;

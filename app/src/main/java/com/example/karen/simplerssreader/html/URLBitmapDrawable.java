@@ -1,4 +1,4 @@
-package com.example.karen.simplerssreader.helpers.cache;
+package com.example.karen.simplerssreader.html;
 
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;

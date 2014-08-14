@@ -3,13 +3,17 @@
     <!-- ActionBar styles -->
     <style name="AppThemeActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
         <item name="android:background">@android:color/holo_orange_dark</item>
-        <item name="android:subtitleTextStyle">@style/AppThemeActionBarTitleText</item>
+        <item name="android:subtitleTextStyle">@style/AppThemeActionBarSubTitleText</item>
         <item name="android:titleTextStyle">@style/AppThemeActionBarTitleText</item>
     </style>
 
     <!-- ActionBar title text -->
     <style name="AppThemeActionBarTitleText" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title.Inverse">
         <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="AppThemeActionBarSubTitleText" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Subtitle.Inverse">
+        <item name="android:textColor">@android:color/holo_orange_light</item>
     </style>
 
     <style name="ListViewAppTheme" parent="android:Widget.ListView">

@@ -2,9 +2,6 @@ package com.example.karen.simplerssreader.helpers.adapters;
 
 import android.content.Context;
 import android.text.Html;
-import android.text.SpannableString;
-import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +10,7 @@ import android.widget.TextView;
 
 import com.example.karen.simplerssreader.R;
 import com.example.karen.simplerssreader.core.rss.Message;
+import com.example.karen.simplerssreader.html.URLImageGetter;
 
 import java.util.List;
 

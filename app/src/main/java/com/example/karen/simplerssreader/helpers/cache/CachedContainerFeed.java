@@ -18,8 +18,12 @@ public class CachedContainerFeed {
     }
 
     public void setPosts(List<Message> messages) {
-        dateUpdate = new Date();
         posts = messages;
+
+        // Записываем новую дату записи
+        dateUpdate = new Date();
+
+        // TODO: Асинхронно записываем в кеш
     }
 
     public List<Message> getPosts() {
