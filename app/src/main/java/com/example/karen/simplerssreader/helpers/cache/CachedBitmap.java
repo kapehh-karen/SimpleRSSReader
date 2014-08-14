@@ -22,7 +22,7 @@ public class CachedBitmap {
     CacheManager cacheManager;
 
     public CachedBitmap(Context context) {
-        this.cacheManager = new CacheManager(context);
+        this.cacheManager = new CacheManager(context, "img");
     }
 
     public void save(String url, Drawable drawable) throws IOException {

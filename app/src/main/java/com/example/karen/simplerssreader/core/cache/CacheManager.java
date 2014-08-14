@@ -1,7 +1,6 @@
 package com.example.karen.simplerssreader.core.cache;
 
 import android.content.Context;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,20 +11,24 @@ import java.io.IOException;
  * Created by Karen on 14.08.2014.
  */
 public class CacheManager {
-    private static final long MAX_SIZE = 52428800L; // 50MB
-
+    private long maxCacheSize;
     private File cacheDir;
 
-    public CacheManager(Context context) {
-        this.cacheDir = context.getCacheDir();
+    public CacheManager(Context context, String subDir) {
+        this(context, subDir, 52428800L); // Max dir size 50MB
+    }
+
+    public CacheManager(Context context, String subDir, long maxCacheSize) {
+        this.maxCacheSize = maxCacheSize;
+        this.cacheDir = new File(context.getCacheDir(), subDir);
     }
 
     public void cacheData(byte[] data, String name) throws IOException {
         long size = getCacheSize();
         long newSize = data.length + size;
 
-        if (newSize > MAX_SIZE) {
-            cleanCache(newSize - MAX_SIZE);
+        if (newSize > maxCacheSize) {
+            cleanCache(newSize - maxCacheSize);
         }
 
         File file = new File(cacheDir, name);
