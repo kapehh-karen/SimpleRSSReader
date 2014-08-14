@@ -121,12 +121,9 @@ public class NewsActivity extends Activity implements SwipeRefreshLayout.OnRefre
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            ActionBar ab = getActionBar();
-            if (ab != null) {
-                Date dateUpdate = Main.cachedContainerFeed.getDateUpdate();
-                if (dateUpdate != null) {
-                    ab.setSubtitle(simpleDateFormat.format(dateUpdate));
-                }
+            Date dateUpdate = Main.cachedContainerFeed.getDateUpdate();
+            if (dateUpdate != null) {
+                getActionBar().setSubtitle(simpleDateFormat.format(dateUpdate));
             }
         }
     }
@@ -154,6 +151,7 @@ public class NewsActivity extends Activity implements SwipeRefreshLayout.OnRefre
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+            startActivity(new Intent(this, Settings.class));
             return true;
         }
         return super.onOptionsItemSelected(item);

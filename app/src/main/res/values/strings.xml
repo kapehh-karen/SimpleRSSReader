@@ -3,9 +3,13 @@
 
     <string name="app_name">Simple RSS Reader</string>
     <string name="action_settings">Настройки</string>
+
     <string name="news_empty">Список пуст, потяните вниз для обновления.</string>
     <string name="error_loading">Ошибка при загрузке!</string>
     <string name="complete_loading">Обновлено!</string>
-    <string name="title_activity_settings">Settings</string>
+
+    <string name="rss_url">URL:</string>
+    <string name="rss_http">http://</string>
+    <string name="rss_set">Применить</string>
 
 </resources>

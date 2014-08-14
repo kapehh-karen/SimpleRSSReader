@@ -5,6 +5,7 @@
         <!-- Customize your theme here. -->
         <item name="android:actionBarStyle">@style/AppThemeActionBar</item>
         <item name="android:actionBarTabTextStyle">@style/AppThemeActionBarTitleText</item>
+        <item name="android:buttonStyle">@style/SolidButton</item>
 
         <item name="android:listViewStyle">@style/ListViewAppTheme</item>
         <item name="android:listViewWhiteStyle">@style/ListViewAppTheme.White</item>

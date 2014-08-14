@@ -5,6 +5,7 @@
         <!-- Customize your theme here. -->
         <item name="android:actionBarStyle">@style/AppThemeActionBar</item>
         <item name="android:actionBarTabTextStyle">@style/AppThemeActionBarTitleText</item>
+        <item name="android:buttonStyle">@style/SolidButton</item>
 
         <item name="android:listChoiceBackgroundIndicator">@drawable/apptheme_list_selector_holo_light</item>
         <item name="android:activatedBackgroundIndicator">@drawable/apptheme_activated_background_holo_light</item>
