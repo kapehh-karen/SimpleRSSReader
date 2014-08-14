@@ -5,11 +5,16 @@
     <string name="action_settings">Настройки</string>
 
     <string name="news_empty">Список пуст, потяните вниз для обновления.</string>
-    <string name="error_loading">Ошибка при загрузке!</string>
+    <string name="error_loading">Непредвиденная ошибка при загрузке!</string>
+    <string name="error_noset_rss">Для начала введите URL в Настройках!</string>
     <string name="complete_loading">Обновлено!</string>
 
     <string name="rss_url">URL:</string>
     <string name="rss_http">http://</string>
     <string name="rss_set">Применить</string>
+    <string name="rss_example">Пример: http://bash.im/rss/</string>
+    <string name="error_need_url">Требуется ввести URL!</string>
+    <string name="error_invalid_url">URL содержит недопустимые символы или имеет неверный формат!</string>
+    <string name="error_invalid_protocol">Поддерживается только HTTP протокол!</string>
 
 </resources>

@@ -1,5 +1,7 @@
 package com.example.karen.simplerssreader.helpers.cache;
 
+import android.content.Context;
+
 import com.example.karen.simplerssreader.core.rss.Message;
 
 import java.util.ArrayList;
@@ -12,8 +14,9 @@ import java.util.List;
 public class CachedContainerFeed {
     private List<Message> posts = new ArrayList<Message>();
     private Date dateUpdate;
+    private String urlRSS;
 
-    public CachedContainerFeed() {
+    public CachedContainerFeed(Context context) {
         // TODO: Грузим из кеша
     }
 
@@ -32,5 +35,13 @@ public class CachedContainerFeed {
 
     public Date getDateUpdate() {
         return dateUpdate;
+    }
+
+    public String getUrlRSS() {
+        return urlRSS;
+    }
+
+    public void setUrlRSS(String urlRSS) {
+        this.urlRSS = urlRSS;
     }
 }

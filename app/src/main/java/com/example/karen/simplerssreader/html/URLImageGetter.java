@@ -1,10 +1,14 @@
 package com.example.karen.simplerssreader.html;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.text.Html;
 import android.widget.TextView;
+
+import com.example.karen.simplerssreader.Main;
+import com.example.karen.simplerssreader.helpers.cache.CachedBitmap;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -19,6 +23,7 @@ import java.util.HashMap;
  * Created by Karen on 13.08.2014.
  */
 public class URLImageGetter implements Html.ImageGetter {
+    // TODO: Переделать в файловый кеш
     public static HashMap<String, Drawable> listDrawableHashMap = new HashMap<String, Drawable>(); // TODO: Remove
 
     Context c;
@@ -42,6 +47,11 @@ public class URLImageGetter implements Html.ImageGetter {
             source = "http:/" + source;
         }
 
+        try {
+            Main.cachedBitmap.load(source);
+        } catch (IOException e) {
+
+        }
         // TODO: Remove
         if (listDrawableHashMap.containsKey(source)) {
             return listDrawableHashMap.get(source);
@@ -100,6 +110,7 @@ public class URLImageGetter implements Html.ImageGetter {
                 Drawable drawable = Drawable.createFromStream(is, "src");
                 drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
                 URLImageGetter.listDrawableHashMap.put(urlString, drawable); // TODO: Remove
+                Main.cachedBitmap.save(urlString, (Bitmap) null);
                 return drawable;
             } catch (Exception e) {
                 return null;

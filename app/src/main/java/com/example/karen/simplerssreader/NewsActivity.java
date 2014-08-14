@@ -1,17 +1,12 @@
 package com.example.karen.simplerssreader;
 
-import android.annotation.TargetApi;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Color;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,7 +25,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 
 public class NewsActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener, IRetreiveFeedEvent, AdapterView.OnItemClickListener {
@@ -51,6 +45,17 @@ public class NewsActivity extends Activity implements SwipeRefreshLayout.OnRefre
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news);
+
+        Main.init(getApplicationContext());
+
+        // Загружаем настройки
+        Main.cachedContainerFeed.setUrlRSS(Main.applicationConfig.getSettings().getString("rss", ""));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            String updateTime = Main.applicationConfig.getSettings().getString("update", "");
+            if (updateTime.length() > 0) {
+                getActionBar().setSubtitle(updateTime);
+            }
+        }
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
         mSwipeRefreshLayout.setOnRefreshListener(this);
@@ -83,6 +88,17 @@ public class NewsActivity extends Activity implements SwipeRefreshLayout.OnRefre
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+
+        // Сохраняем настройки
+        SharedPreferences.Editor editor = Main.applicationConfig.getSettings().edit();
+        editor.putString("rss", Main.cachedContainerFeed.getUrlRSS());
+        editor.putString("update", dateToString(Main.cachedContainerFeed.getDateUpdate()));
+        editor.apply();
+    }
+
+    @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Message message = (Message) arrayList.get(position);
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(message.getUrl()));
@@ -91,10 +107,33 @@ public class NewsActivity extends Activity implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onRefresh() {
+        String urlRSS = Main.cachedContainerFeed.getUrlRSS();
+        if (urlRSS == null || urlRSS.length() == 0) {
+            Toast.makeText(this, R.string.error_noset_rss, Toast.LENGTH_SHORT).show();
+            startSettings();
+        } else {
+            loadRSS();
+        }
+    }
+
+    private String dateToString(Date date) {
+        if (date == null) {
+            return "";
+        }
+        return simpleDateFormat.format(date);
+    }
+
+    private void loadRSS() {
         if (retreiveFeedTask == null) {
+            // Включаем анимацию загрузки
+            mSwipeRefreshLayout.setRefreshing(true);
+
             retreiveFeedTask = new RetreiveFeedTask();
             retreiveFeedTask.setRetreiveFeedEvent(this);
-            retreiveFeedTask.execute("http://habrahabr.ru/rss/hubs/?with_hubs=true&with_tags=true" /*"http://bash.im/rss/"*/);
+
+            // "http://habrahabr.ru/rss/hubs/?with_hubs=true&with_tags=true"
+            // "http://bash.im/rss/"
+            retreiveFeedTask.execute(Main.cachedContainerFeed.getUrlRSS());
         }
     }
 
@@ -119,22 +158,21 @@ public class NewsActivity extends Activity implements SwipeRefreshLayout.OnRefre
             textView.setVisibility(View.VISIBLE);
             listView.setVisibility(View.GONE);
         }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            Date dateUpdate = Main.cachedContainerFeed.getDateUpdate();
-            if (dateUpdate != null) {
-                getActionBar().setSubtitle(simpleDateFormat.format(dateUpdate));
-            }
-        }
     }
 
     @Override
     public void onRetreiveFeed(List<Message> messages) {
         retreiveFeedTask = null;
         mSwipeRefreshLayout.setRefreshing(false);
+
         if (messages != null) {
             Main.cachedContainerFeed.setPosts(messages);
             updateList();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                getActionBar().setSubtitle(dateToString(Main.cachedContainerFeed.getDateUpdate()));
+            }
+
             Toast.makeText(this, R.string.complete_loading, Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, R.string.error_loading, Toast.LENGTH_SHORT).show();
@@ -151,9 +189,21 @@ public class NewsActivity extends Activity implements SwipeRefreshLayout.OnRefre
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            startActivity(new Intent(this, Settings.class));
+            startSettings();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void startSettings() {
+        startActivityForResult(new Intent(this, Settings.class), 0);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK && data != null) {
+            Main.cachedContainerFeed.setUrlRSS(data.getStringExtra("rss"));
+            loadRSS();
+        }
     }
 }
