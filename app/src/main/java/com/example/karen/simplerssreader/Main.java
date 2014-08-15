@@ -2,7 +2,7 @@ package com.example.karen.simplerssreader;
 
 import android.content.Context;
 
-import com.example.karen.simplerssreader.helpers.cache.CachedBitmap;
+import com.example.karen.simplerssreader.helpers.cache.CachedDrawable;
 import com.example.karen.simplerssreader.helpers.cache.CachedContainerFeed;
 import com.example.karen.simplerssreader.helpers.utils.ApplicationConfig;
 
@@ -12,7 +12,7 @@ import com.example.karen.simplerssreader.helpers.utils.ApplicationConfig;
 public class Main {
     public static CachedContainerFeed cachedContainerFeed;
     public static ApplicationConfig applicationConfig;
-    public static CachedBitmap cachedBitmap;
+    public static CachedDrawable cachedDrawable;
 
     private static boolean initialized = false;
 
@@ -22,7 +22,7 @@ public class Main {
         }
         cachedContainerFeed = new CachedContainerFeed(context);
         applicationConfig = new ApplicationConfig(context);
-        cachedBitmap = new CachedBitmap(context);
+        cachedDrawable = new CachedDrawable(context);
         initialized = true;
     }
 

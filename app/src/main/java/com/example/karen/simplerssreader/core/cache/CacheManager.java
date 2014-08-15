@@ -29,6 +29,10 @@ public class CacheManager {
 		}
     }
 
+    public File getFile(String fileName) {
+        return new File(cacheDir, fileName);
+    }
+
     public void cacheData(byte[] data, String name) throws IOException {
         long size = getCacheSize();
         long newSize = data.length + size;

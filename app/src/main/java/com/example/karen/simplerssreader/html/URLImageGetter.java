@@ -1,14 +1,13 @@
 package com.example.karen.simplerssreader.html;
 
 import android.content.Context;
-import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.text.Html;
 import android.widget.TextView;
 
 import com.example.karen.simplerssreader.Main;
-import com.example.karen.simplerssreader.helpers.cache.CachedBitmap;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -16,16 +15,12 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.util.HashMap;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Created by Karen on 13.08.2014.
  */
 public class URLImageGetter implements Html.ImageGetter {
-    // TODO: Переделать в файловый кеш
-    public static HashMap<String, Drawable> listDrawableHashMap = new HashMap<String, Drawable>(); // TODO: Remove
-
     Context c;
     TextView container;
 
@@ -47,30 +42,52 @@ public class URLImageGetter implements Html.ImageGetter {
             source = "http:/" + source;
         }
 
-        try {
-            Main.cachedBitmap.load(source);
-        } catch (IOException e) {
-
-        }
-        // TODO: Remove
-        if (listDrawableHashMap.containsKey(source)) {
-            return listDrawableHashMap.get(source);
-        }
-
         URLBitmapDrawable urlBitmapDrawable = new URLBitmapDrawable();
 
-        // get the actual source
-        new ImageGetterAsyncTask(urlBitmapDrawable).execute(source);
+        try {
+            if (Main.cachedDrawable.inCache(source)) {
+                new CacheImageGetterAsyncTask(urlBitmapDrawable).execute(source);
+            } else {
+                new InternetImageGetterAsyncTask(urlBitmapDrawable).execute(source);
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
-        // return reference to URLDrawable where I will change with actual image from
-        // the src tag
         return urlBitmapDrawable;
     }
 
-    public class ImageGetterAsyncTask extends AsyncTask<String, Void, Drawable> {
+    private class CacheImageGetterAsyncTask extends AsyncTask<String, Void, Drawable> {
         URLBitmapDrawable urlBitmapDrawable;
 
-        public ImageGetterAsyncTask(URLBitmapDrawable d) {
+        public CacheImageGetterAsyncTask(URLBitmapDrawable urlBitmapDrawable) {
+            this.urlBitmapDrawable = urlBitmapDrawable;
+        }
+
+        @Override
+        protected Drawable doInBackground(String... params) {
+            try {
+                return Main.cachedDrawable.load(params[0]);
+            } catch (IOException e) {
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Drawable result) {
+            if (result == null) {
+                return;
+            }
+            urlBitmapDrawable.setBounds(0, 0, result.getIntrinsicWidth(), result.getIntrinsicHeight());
+            urlBitmapDrawable.drawable = result;
+            URLImageGetter.this.container.setText(URLImageGetter.this.container.getText());
+        }
+    }
+
+    private class InternetImageGetterAsyncTask extends AsyncTask<String, Void, Drawable> {
+        URLBitmapDrawable urlBitmapDrawable;
+
+        public InternetImageGetterAsyncTask(URLBitmapDrawable d) {
             this.urlBitmapDrawable = d;
         }
 
@@ -86,16 +103,8 @@ public class URLImageGetter implements Html.ImageGetter {
                 return;
             }
 
-            // set the correct bound according to the result from HTTP call
             urlBitmapDrawable.setBounds(0, 0, result.getIntrinsicWidth(), result.getIntrinsicHeight());
-
-            // change the reference of the current drawable to the result
-            // from the HTTP call
             urlBitmapDrawable.drawable = result;
-
-            // redraw the image by invalidating the container
-            //URLImageGetter.this.container.requestLayout();
-            //URLImageGetter.this.container.invalidate();
             URLImageGetter.this.container.setText(URLImageGetter.this.container.getText());
         }
 
@@ -107,17 +116,16 @@ public class URLImageGetter implements Html.ImageGetter {
         public Drawable fetchDrawable(String urlString) {
             try {
                 InputStream is = fetch(urlString);
-                Drawable drawable = Drawable.createFromStream(is, "src");
+                Drawable drawable = BitmapDrawable.createFromStream(is, null);
                 drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-                URLImageGetter.listDrawableHashMap.put(urlString, drawable); // TODO: Remove
-                Main.cachedBitmap.save(urlString, (Bitmap) null);
+                Main.cachedDrawable.save(urlString, drawable);
                 return drawable;
             } catch (Exception e) {
                 return null;
             }
         }
 
-        private InputStream fetch(String urlString) throws MalformedURLException, IOException {
+        private InputStream fetch(String urlString) throws IOException {
             DefaultHttpClient httpClient = new DefaultHttpClient();
             HttpGet request = new HttpGet(urlString);
             HttpResponse response = httpClient.execute(request);

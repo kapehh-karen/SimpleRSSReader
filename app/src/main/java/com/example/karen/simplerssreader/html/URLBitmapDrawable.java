@@ -1,5 +1,6 @@
 package com.example.karen.simplerssreader.html;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -8,13 +9,20 @@ import android.graphics.drawable.Drawable;
  * Created by Karen on 13.08.2014.
  */
 public class URLBitmapDrawable extends BitmapDrawable {
-    // the drawable that you need to set, you could set the initial drawing
-    // with the loading image if you need to
     public Drawable drawable;
+
+    public URLBitmapDrawable() {
+        super();
+    }
+
+    public URLBitmapDrawable(Drawable drawable) {
+        this();
+        this.drawable = drawable;
+        setBounds(drawable.getBounds());
+    }
 
     @Override
     public void draw(Canvas canvas) {
-        // override the draw to facilitate refresh function later
         if(drawable != null) {
             drawable.draw(canvas);
         }
