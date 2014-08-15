@@ -4,8 +4,11 @@ import android.content.Context;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * Created by Karen on 14.08.2014.
@@ -21,6 +24,9 @@ public class CacheManager {
     public CacheManager(Context context, String subDir, long maxCacheSize) {
         this.maxCacheSize = maxCacheSize;
         this.cacheDir = new File(context.getCacheDir(), subDir);
+		if (!this.cacheDir.exists()) {
+			this.cacheDir.mkdirs();
+		}
     }
 
     public void cacheData(byte[] data, String name) throws IOException {
@@ -41,11 +47,21 @@ public class CacheManager {
         }
     }
 
+    public OutputStream cacheDataStream(String name) throws FileNotFoundException {
+        long size = getCacheSize();
+
+        if (size > maxCacheSize) {
+            cleanCache(size - maxCacheSize);
+        }
+
+        File file = new File(cacheDir, name);
+        return new FileOutputStream(file);
+    }
+
     public byte[] retrieveData(String name) throws IOException {
         File file = new File(cacheDir, name);
 
         if (!file.exists()) {
-            // Data doesn't exist
             return null;
         }
 
@@ -58,6 +74,16 @@ public class CacheManager {
         }
 
         return data;
+    }
+
+    public InputStream retrieveDataStream(String name) throws FileNotFoundException {
+        File file = new File(cacheDir, name);
+
+        if (!file.exists()) {
+            return null;
+        }
+
+        return new FileInputStream(file);
     }
 
     private void cleanCache(long bytes) {

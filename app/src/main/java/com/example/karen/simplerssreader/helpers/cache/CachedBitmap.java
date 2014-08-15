@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
@@ -27,7 +28,8 @@ public class CachedBitmap {
 
     public void save(String url, Drawable drawable) throws IOException {
         String urlBase64 = getBase64(url);
-        cacheManager.cacheData("QWEQWE".getBytes(), urlBase64);
+        OutputStream stream = cacheManager.cacheDataStream(urlBase64);
+        /*drawable*/
         // TODO: Write Object
     }
 
