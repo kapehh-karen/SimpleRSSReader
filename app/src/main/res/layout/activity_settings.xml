@@ -32,6 +32,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textUri"
                 android:hint="@string/rss_http"
+                android:text="@string/rss_http"
                 android:singleLine="true"/>
 
             <TextView

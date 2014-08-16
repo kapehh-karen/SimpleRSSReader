@@ -5,6 +5,7 @@
         <item name="android:background">@android:color/holo_orange_dark</item>
         <item name="android:subtitleTextStyle">@style/AppThemeActionBarSubTitleText</item>
         <item name="android:titleTextStyle">@style/AppThemeActionBarTitleText</item>
+        <item name="android:icon">@android:color/transparent</item>
     </style>
 
     <!-- ActionBar title text -->

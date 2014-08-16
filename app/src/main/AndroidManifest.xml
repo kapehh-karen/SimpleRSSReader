@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.karen.simplerssreader" >
+    package="com.nlt.karen.simplerssreader" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -11,7 +11,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".NewsActivity"
+            android:name="com.nlt.karen.simplerssreader.NewsActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,9 +20,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Settings"
+            android:name="com.nlt.karen.simplerssreader.Settings"
             android:label="@string/action_settings"
-            android:parentActivityName=".NewsActivity" >
+            android:parentActivityName="com.nlt.karen.simplerssreader.NewsActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />

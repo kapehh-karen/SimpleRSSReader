@@ -5,12 +5,13 @@ android {
     buildToolsVersion "19.1.0"
 
     defaultConfig {
-        applicationId "com.example.karen.simplerssreader"
+        applicationId "com.nlt.karen.simplerssreader"
         minSdkVersion 14
         targetSdkVersion 20
         versionCode 1
         versionName "1.0"
     }
+
     buildTypes {
         release {
             runProguard false
